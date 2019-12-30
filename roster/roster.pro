@@ -4,7 +4,7 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -26,10 +26,14 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+    contactlistmodel.cpp \
+    downloader.cpp
 
 HEADERS += \
-        mainwindow.h
+        mainwindow.h \
+    contactlistmodel.h \
+    downloader.h
 
 FORMS += \
         mainwindow.ui

@@ -28,12 +28,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     contactlistmodel.cpp \
-    downloader.cpp
+    downloader.cpp \
+    dataprovider.cpp
 
 HEADERS += \
         mainwindow.h \
     contactlistmodel.h \
-    downloader.h
+    downloader.h \
+    dataprovider.h
 
 FORMS += \
         mainwindow.ui

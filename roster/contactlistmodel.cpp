@@ -1,14 +1,14 @@
 #include "contactlistmodel.h"
 #include <QDebug>
 #include <QJsonObject>
+#include <QJsonDocument>
 
-#include "downloader.h"
+#include "dataprovider.h"
 
 ContactListModel::ContactListModel(QObject *parent) : QAbstractListModel(parent)
 {
-    Downloader * down = new Downloader(this);
-    down->downloadDataFile();
-    connect(down, SIGNAL(dataReady(const QJsonDocument&)), this, SLOT(handleDataReady(QJsonDocument)));
+    DataProvider::getInstance().fetchData();
+    connect(&DataProvider::getInstance(), SIGNAL(dataReady(const QJsonDocument&)), this, SLOT(handleDataReady(QJsonDocument)));
 }
 
 int ContactListModel::rowCount(const QModelIndex &) const
@@ -25,7 +25,6 @@ QVariant ContactListModel::data(const QModelIndex &index, int role) const
     }
     return QVariant();
 }
-
 
 void ContactListModel::handleDataReady(const QJsonDocument& json) {
     mJsonArray = json["roster"].toArray();

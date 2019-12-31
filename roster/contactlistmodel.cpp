@@ -7,8 +7,8 @@
 
 ContactListModel::ContactListModel(QObject *parent) : QAbstractListModel(parent)
 {
-    DataProvider::getInstance().fetchData();
     connect(&DataProvider::getInstance(), SIGNAL(dataReady(const QJsonDocument&)), this, SLOT(handleDataReady(QJsonDocument)));
+    DataProvider::getInstance().fetchData();
 }
 
 int ContactListModel::rowCount(const QModelIndex &) const

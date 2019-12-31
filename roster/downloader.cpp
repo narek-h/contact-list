@@ -20,8 +20,7 @@ void Downloader::handleRequestFinished(QNetworkReply* reply)
 {
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
-         QJsonDocument d = QJsonDocument::fromJson(data);
-         emit dataReady(d);
+        emit downloadFinished(data);
     }  else {
         qCritical() << "Error: " << QString::number(reply->error())
                     << "on file download";

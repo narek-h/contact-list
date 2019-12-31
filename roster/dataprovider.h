@@ -24,9 +24,11 @@ private:
     ~DataProvider();
 
 
-public slots:
+private slots:
+    void handleDownloadFinished(const QByteArray&);
 private:
     static DataProvider mInstance;
+
 };
 
 #endif // DATAPROVIDER_H

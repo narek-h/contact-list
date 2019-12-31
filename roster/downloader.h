@@ -2,9 +2,9 @@
 #define DOWNLOADER_H
 
 #include <QObject>
-#include <QJsonDocument>
 #include <QtNetwork/QNetworkAccessManager>
 #include <QtNetwork/QNetworkReply>
+#include <QByteArray>
 
 class Downloader : public QObject
 {
@@ -15,7 +15,7 @@ public:
     void downloadDataFile();
 
 signals:
-    void dataReady(const QJsonDocument&);
+    void downloadFinished(const QByteArray&);
 
 public slots:
     void handleRequestFinished(QNetworkReply* reply);

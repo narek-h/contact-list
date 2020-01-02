@@ -25,6 +25,7 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG += c++11
 
 SOURCES += \
+    contactitemdelegate.cpp \
         main.cpp \
         mainwindow.cpp \
     contactlistmodel.cpp \
@@ -32,6 +33,7 @@ SOURCES += \
     dataprovider.cpp
 
 HEADERS += \
+    contactitemdelegate.h \
         mainwindow.h \
     contactlistmodel.h \
     downloader.h \

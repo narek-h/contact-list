@@ -21,7 +21,7 @@ QVariant ContactListModel::data(const QModelIndex &index, int role) const
 {
     if (role == Qt::DisplayRole) {
         QJsonObject obj = mJsonArray[index.row()].toObject()["account"].toObject();
-        return obj["firstName"].toString() + "  " + obj["lastName"].toString();
+        return obj.toVariantMap();//obj["firstName"].toString() + "  " + obj["lastName"].toString();
     }
     return QVariant();
 }

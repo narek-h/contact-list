@@ -1,6 +1,8 @@
 #include "itemviewdialog.h"
+#include "utils.h"
 #include "ui_itemviewdialog.h"
 #include <QDate>
+
 
 ItemViewDialog::ItemViewDialog(QWidget *parent):
     QDialog(parent),
@@ -25,6 +27,17 @@ void ItemViewDialog::setData(const QVariantMap& data)
     ui->fullName->setText(fullName);
     ui->sex->setText(data.value("sex").toString());
     ui->country->setText(data.value("country").toString());
+
+    //Draw avatar
+    int size = 128;
+    QImage image(size,size,QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+
+    QPainter paint;
+    paint.begin(&image);
+    utils::paintAvatar(paint, size, QPoint(size/2,size/2),"AB", utils::getColorForSex(data.value("sex").toString()), Qt::blue);
+    paint.end();
+    ui->avatar->setPixmap(QPixmap::fromImage(image));
 
     //Parse birthday
     //TODO: clarify birthday format. For now just adding birthday2 field if exists, otherwise using birthday as is.

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>269</height>
+    <width>364</width>
+    <height>370</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,17 +20,10 @@
    <string notr="true">QDialog{background-color : white}</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <widget class="QLabel" name="avatar">
+   <item row="7" column="3">
+    <widget class="QLabel" name="label_9">
      <property name="text">
-      <string>Avatar</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Username:</string>
+      <string>Language:</string>
      </property>
     </widget>
    </item>
@@ -41,6 +34,48 @@
      </property>
     </widget>
    </item>
+   <item row="7" column="4">
+    <widget class="QLabel" name="language">
+     <property name="text">
+      <string>English</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="4">
+    <widget class="QLabel" name="sex">
+     <property name="text">
+      <string>Male</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="2">
+    <widget class="Line" name="line_5">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Username:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Country:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLabel" name="birthdate">
+     <property name="text">
+      <string>10/10/85</string>
+     </property>
+    </widget>
+   </item>
    <item row="2" column="0" colspan="5">
     <widget class="Line" name="line_3">
      <property name="orientation">
@@ -48,17 +83,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Full Name:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1" colspan="3">
-    <widget class="QLabel" name="fullName">
-     <property name="text">
-      <string>John Smith</string>
+   <item row="8" column="0" colspan="5">
+    <widget class="Line" name="line_6">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -66,6 +94,27 @@
     <widget class="Line" name="line_2">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QLabel" name="country">
+     <property name="text">
+      <string>USA</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="3">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Sex:</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" colspan="3">
+    <widget class="QLabel" name="fullName">
+     <property name="text">
+      <string>John Smith</string>
      </property>
     </widget>
    </item>
@@ -79,13 +128,6 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="1">
-    <widget class="QLabel" name="birthdate">
-     <property name="text">
-      <string>10/10/85</string>
-     </property>
-    </widget>
-   </item>
    <item row="5" column="2">
     <widget class="Line" name="line_4">
      <property name="orientation">
@@ -93,17 +135,34 @@
      </property>
     </widget>
    </item>
-   <item row="5" column="3">
-    <widget class="QLabel" name="label_5">
-     <property name="text">
-      <string>Sex:</string>
+   <item row="0" column="0">
+    <widget class="QLabel" name="avatar">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
-    </widget>
-   </item>
-   <item row="5" column="4">
-    <widget class="QLabel" name="sex">
+     <property name="minimumSize">
+      <size>
+       <width>128</width>
+       <height>128</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>128</width>
+       <height>128</height>
+      </size>
+     </property>
+     <property name="baseSize">
+      <size>
+       <width>128</width>
+       <height>128</height>
+      </size>
+     </property>
      <property name="text">
-      <string>Male</string>
+      <string>Avatar</string>
      </property>
     </widget>
    </item>
@@ -114,49 +173,14 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="label_7">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label">
      <property name="text">
-      <string>Country:</string>
+      <string>Full Name:</string>
      </property>
     </widget>
    </item>
-   <item row="7" column="1">
-    <widget class="QLabel" name="country">
-     <property name="text">
-      <string>USA</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="2">
-    <widget class="Line" name="line_5">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="3">
-    <widget class="QLabel" name="label_9">
-     <property name="text">
-      <string>Language:</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="4">
-    <widget class="QLabel" name="language">
-     <property name="text">
-      <string>English</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="5">
-    <widget class="Line" name="line_6">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1" colspan="3" alignment="Qt::AlignHCenter">
+   <item row="9" column="1">
     <widget class="QPushButton" name="okButton">
      <property name="text">
       <string>OK</string>

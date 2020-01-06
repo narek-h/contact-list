@@ -31,7 +31,8 @@ SOURCES += \
         mainwindow.cpp \
     contactlistmodel.cpp \
     downloader.cpp \
-    dataprovider.cpp
+    dataprovider.cpp \
+    utils.cpp
 
 HEADERS += \
     contactitemdelegate.h \
@@ -39,7 +40,8 @@ HEADERS += \
         mainwindow.h \
     contactlistmodel.h \
     downloader.h \
-    dataprovider.h
+    dataprovider.h \
+    utils.h
 
 FORMS += \
         itemviewdialog.ui \

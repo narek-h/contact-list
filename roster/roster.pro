@@ -26,6 +26,7 @@ CONFIG += c++11
 
 SOURCES += \
     contactitemdelegate.cpp \
+    itemviewdialog.cpp \
         main.cpp \
         mainwindow.cpp \
     contactlistmodel.cpp \
@@ -34,12 +35,14 @@ SOURCES += \
 
 HEADERS += \
     contactitemdelegate.h \
+    itemviewdialog.h \
         mainwindow.h \
     contactlistmodel.h \
     downloader.h \
     dataprovider.h
 
 FORMS += \
+        itemviewdialog.ui \
         mainwindow.ui
 
 # Default rules for deployment.

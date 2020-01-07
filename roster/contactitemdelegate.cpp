@@ -55,5 +55,9 @@ void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
 QSize ContactItemDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
-    return QSize(10,itemHeight);
+    if(index.parent().isValid()) {
+        return QSize(10,itemHeight);
+    } else {
+        return QSize(10, 20);
+    }
 }

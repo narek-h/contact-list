@@ -27,14 +27,7 @@
        <widget class="QLineEdit" name="lineEdit"/>
       </item>
       <item row="1" column="0">
-       <widget class="QListView" name="listView">
-        <property name="minimumSize">
-         <size>
-          <width>50</width>
-          <height>50</height>
-         </size>
-        </property>
-       </widget>
+       <widget class="QTreeView" name="treeView"/>
       </item>
      </layout>
     </item>

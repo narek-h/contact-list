@@ -29,8 +29,8 @@ void paintAvatar( QPainter& paint,
 QString makeInitials(const QString& firstName, const QString& lastName)
 {
     QString initials;
-    initials.append(firstName.isEmpty() ? QChar() : firstName.front());
-    initials.append(lastName.isEmpty() ? QChar() : lastName.front());
+    initials.append(firstName.isEmpty() ? "" : QString(firstName.front()));
+    initials.append(lastName.isEmpty() ? "" : QString(lastName.front()));
     if (initials.isEmpty()) {
        qWarning() << "Empty firstName and lastName for item";
        initials = "??";

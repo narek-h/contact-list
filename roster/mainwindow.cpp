@@ -12,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent):
     ui->setupUi(this);
 
     ContactListModel* model = new ContactListModel();
-    ui->listView->setModel(model);
-    ContactItemDelegate* delegate = new ContactItemDelegate(ui->listView);
-    ui->listView->setItemDelegate(delegate);
+    ui->treeView->setModel(model);
+    ContactItemDelegate* delegate = new ContactItemDelegate(ui->treeView);
+    ui->treeView->setItemDelegate(delegate);
 
-    bool success = connect(ui->listView,SIGNAL(clicked(const QModelIndex)),this,SLOT(itemClicked(QModelIndex)));
+    bool success = connect(ui->treeView,SIGNAL(clicked(const QModelIndex)),this,SLOT(itemClicked(QModelIndex)));
     Q_ASSERT(success);
 }
 
@@ -27,8 +27,10 @@ MainWindow::~MainWindow()
 
 void MainWindow::itemClicked (QModelIndex index )
 {
-    QString data = index.data().toString();//index.data(Qt::UserRole).value<QString>();
-    qDebug() <<" Data " << index.data().toMap().value("firstName").toString();
+    if (!index.parent().isValid()) {//Top item, no handling
+        return;
+    }
+
     ItemViewDialog* dialog = new ItemViewDialog(this);
     dialog->setData(index.data().toMap());
     dialog->show();

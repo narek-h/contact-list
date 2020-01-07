@@ -32,7 +32,8 @@ SOURCES += \
     contactlistmodel.cpp \
     downloader.cpp \
     dataprovider.cpp \
-    utils.cpp
+    utils.cpp \
+    treeitem.cpp
 
 HEADERS += \
     contactitemdelegate.h \
@@ -41,7 +42,8 @@ HEADERS += \
     contactlistmodel.h \
     downloader.h \
     dataprovider.h \
-    utils.h
+    utils.h \
+    treeitem.h
 
 FORMS += \
         itemviewdialog.ui \

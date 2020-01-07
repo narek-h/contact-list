@@ -17,6 +17,10 @@ ContactItemDelegate::ContactItemDelegate(QWidget* parent):QStyledItemDelegate(pa
 void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option,
                                 const QModelIndex &index) const
 {
+    if (!index.parent().isValid()) { //top item
+         return QStyledItemDelegate::paint(painter, option, index);
+    }
+
     QMap<QString, QVariant> itemData = index.data().toMap();
     if (option.state & QStyle::State_Selected) {
         painter->fillRect(option.rect, option.palette.highlight());
@@ -24,23 +28,27 @@ void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     painter->save();
     QRect rect = option.rect;
+
+
+    const double yOffset = (rect.height() - PaintingScaleFactor) / 2;
+    painter->translate(rect.x(), rect.y() + yOffset);
+    painter->scale(PaintingScaleFactor, PaintingScaleFactor);
+
     //Item separators
-    QPen pen;
-    pen.setColor(QColor(Qt::lightGray));
-    painter->setPen(pen);
-    painter->drawRect(rect);
+//    QPen pen;
+//    pen.setColor(QColor(Qt::lightGray));
+//    painter->setPen(pen);
+//    painter->drawRect(rect);
 
     //TODO: May be better to keep the model in Strings to not use toString()
     QString firstName = itemData.value("firstName").toString();
     QString lastName = itemData.value("lastName").toString();
     QString initials = utils::makeInitials(firstName, lastName);
 
-    const double yOffset = (rect.height() - PaintingScaleFactor) / 2;
-    painter->translate(rect.x(), rect.y() + yOffset);
-    painter->scale(PaintingScaleFactor, PaintingScaleFactor);
     utils::paintAvatar(*painter, 32, QPoint(avatarLeftPadding , 0), initials, utils::getColorForSex(itemData.value("sex").toString()), Qt::blue);
     //painter->drawText(0, 0, QString::number(index.row()) + ".");
     painter->drawText(textLeftPadding, 0,  firstName + " " + lastName);
+
     painter->restore();
 }
 

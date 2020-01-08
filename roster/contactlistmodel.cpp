@@ -85,11 +85,14 @@ QModelIndex	ContactListModel::parent(const QModelIndex &index) const
 
 void ContactListModel::handleDataReady(const dataChunkList& dataChunkList)
 {
+    bool firstRun = mGroups.isEmpty();
     foreach(DataChunkType pair, dataChunkList) {
         QVariantMap groupData = pair.first.toMap();
         int groupId = groupData.value("groupOrder").toInt();
         if (!mGroups.contains(groupId)) {
+            beginInsertRows(QModelIndex(), 0, groupId);
             mGroups[groupId] = new TreeItem(groupData, nullptr);
+            endInsertRows();
         }
         int start = mGroups.contains(groupId) ? mGroups[groupId]->row() : 0;
         beginInsertRows(index(groupId,0), start, start + pair.second.size());
@@ -117,7 +120,7 @@ void ContactListModel::fetchMore(const QModelIndex &parent)
 }
 
 int ContactListModel::getGroupToFetch() const
-{
+{    
     //we fetch data for a group which has last item visible and has more data to load.
     //when we get here there will be only one group satisfying the condition, assuming we can't have two big groups visible together
     int group = -1; //invlaid

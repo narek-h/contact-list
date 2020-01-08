@@ -31,7 +31,6 @@ private:
     DataProvider(QObject *parent = nullptr);
     ~DataProvider();
 
-
 private slots:
     void handleDownloadFinished(const QByteArray&);
     bool splitJsonToGroups(const QJsonDocument& json);
@@ -40,6 +39,8 @@ private:
     QMap<int, QVector<QVariant>> mItemsByGroups;
     QMap<int, QVariant> mGroupsData;
     QMap<int, int> mSentItemsCountPerGroup;
+
+    QVariantMap mGrSizes;
 };
 
 #endif // DATAPROVIDER_H

@@ -46,7 +46,11 @@ void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
 
     utils::paintAvatar(*painter, 32, QPoint(avatarLeftPadding , 0), initials, utils::getColorForSex(itemData.value("sex").toString()), Qt::blue);
 //    painter->drawText(0, 0, QString::number(index.row()) + ".");
-    painter->drawText(textLeftPadding, 0,  firstName + " " + lastName);
+    QFont font = painter->font();
+
+    QFontMetrics fm(font);
+    int height = fm.height();
+    painter->drawText(textLeftPadding, height / 4,  firstName + " " + lastName);
 
     painter->restore();
 }

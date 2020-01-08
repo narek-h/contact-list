@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include <QModelIndex>
 
+class QDialog;
+
 namespace Ui {
 class MainWindow;
 }
@@ -21,6 +23,7 @@ public slots:
 
 private:
     Ui::MainWindow *ui;
+    QMap<int, QDialog*> openDialogs;
 };
 
 #endif // MAINWINDOW_H

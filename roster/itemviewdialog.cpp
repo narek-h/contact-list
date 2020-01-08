@@ -1,14 +1,14 @@
 #include "itemviewdialog.h"
 #include "utils.h"
 #include "ui_itemviewdialog.h"
-#include <QDate>
-
+#include <QDateTime>
 
 ItemViewDialog::ItemViewDialog(QWidget *parent):
     QDialog(parent),
     ui(new Ui::ItemViewDialog)
 {
     ui->setupUi(this);
+    ui->verticalLayout->setAlignment(ui->okButton, Qt::AlignHCenter);
     bool success = connect(ui->okButton, SIGNAL(clicked()), this, SLOT(close()));
     Q_ASSERT(success);
 }
@@ -54,15 +54,21 @@ void ItemViewDialog::setData(const QVariantMap& data)
         int day = birthday2.value("day").toInt();
         int month = birthday2.value("month").toInt();
         int year = birthday2.value("year").toInt();
-        QDate date(year, month, day);
-        if (!data.isEmpty()) {
-            birthday = date.toString(Qt::ISODate);
+        QDateTime date;
+        date.setDate(QDate(year, month, day));
+        if (date.isValid()) {
+            birthday = date.date().toString(Qt::ISODate);
         }
     }
 
     if (birthday.isEmpty()) {
-        birthday = data.value("birthday").toString();
+        QDateTime date = QDateTime::fromSecsSinceEpoch(data.value("birthday").toLongLong());
+        //if (date.isEm)
+        if (date.isValid()) {
+            birthday = date.date().toString(Qt::ISODate);
+        }
     }
+
 
     ui->birthdate->setText(birthday);
 }

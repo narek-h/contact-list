@@ -21,16 +21,20 @@ void paintAvatar( QPainter& paint,
 
     paint.setPen(textColor);
     QFont font = paint.font();
-    font.setPointSize(int(size / 2.5));
+    font.setPointSizeF(size / 2.5);
     paint.setFont(font);
-    paint.drawText(QPoint(center.x() - size/3, center.y()+ size/5), text);
+
+    QFontMetrics fm(font);
+    int width = fm.width(text);
+    int height = fm.height();
+    paint.drawText(QPointF(center.x() - width / 2.0, center.y() + height / 4), text);
 }
 
 QString makeInitials(const QString& firstName, const QString& lastName)
 {
     QString initials;
-    initials.append(firstName.isEmpty() ? "" : QString(firstName.front()));
-    initials.append(lastName.isEmpty() ? "" : QString(lastName.front()));
+    initials.append(firstName.isEmpty() ? "" : QString(firstName.at(0)));
+    initials.append(lastName.isEmpty() ? "" : QString(lastName.at(0)));
     if (initials.isEmpty()) {
        qWarning() << "Empty firstName and lastName for item";
        initials = "??";

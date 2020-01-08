@@ -100,7 +100,6 @@ void DataProvider::fetchData(int group)
 
 bool DataProvider::canFetch(int group)
 {
-    qDebug() << " current - " << mSentItemsCountPerGroup[group] << "total -" << mGrSizes[QString::number(group)].toInt();
     return mSentItemsCountPerGroup[group] < mGrSizes[QString::number(group)].toInt();
 }
 
@@ -113,7 +112,7 @@ bool DataProvider::splitJsonToGroups(const QJsonDocument& json)
     if (mItemsByGroups.size() > 0) //done
         return true;
 
-    QJsonArray jsonArray = json["roster"].toArray();
+    QJsonArray jsonArray = json.object()["roster"].toArray();
     if (jsonArray.size() == 0 ) {
         qCritical() <<"No elements in roster array";
         return false;

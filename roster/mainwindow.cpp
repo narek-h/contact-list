@@ -31,8 +31,14 @@ void MainWindow::itemClicked (QModelIndex index )
     if (!index.parent().isValid()) {//Top item, no handling
         return;
     }
+    if (openDialogs.contains(index.row())) { // already opened
+        openDialogs.value(index.row())->activateWindow();
+        return;
+    }
 
     ItemViewDialog* dialog = new ItemViewDialog(this);
+    connect(dialog, &QDialog::finished, this , [=](int) { openDialogs.remove(index.row()); });
+    openDialogs.insert(index.row(), dialog);
     dialog->setData(index.data().toMap());
     dialog->show();
 }

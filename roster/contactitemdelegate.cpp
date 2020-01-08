@@ -29,7 +29,6 @@ void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     painter->save();
     QRect rect = option.rect;
 
-
     const double yOffset = (rect.height() - PaintingScaleFactor) / 2;
     painter->translate(rect.x(), rect.y() + yOffset);
     painter->scale(PaintingScaleFactor, PaintingScaleFactor);
@@ -46,7 +45,7 @@ void ContactItemDelegate::paint(QPainter *painter, const QStyleOptionViewItem &o
     QString initials = utils::makeInitials(firstName, lastName);
 
     utils::paintAvatar(*painter, 32, QPoint(avatarLeftPadding , 0), initials, utils::getColorForSex(itemData.value("sex").toString()), Qt::blue);
-    //painter->drawText(0, 0, QString::number(index.row()) + ".");
+//    painter->drawText(0, 0, QString::number(index.row()) + ".");
     painter->drawText(textLeftPadding, 0,  firstName + " " + lastName);
 
     painter->restore();

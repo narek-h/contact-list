@@ -2,6 +2,13 @@
 #define DATAPROVIDER_H
 
 #include <QObject>
+#include <QVector>
+#include <QMap>
+#include <QVariant>
+
+
+typedef QPair<QVariant, QVector<QVariant>> DataChunkType;
+typedef QVector<DataChunkType> dataChunkList;
 
 class DataProvider : public QObject
 {
@@ -14,10 +21,11 @@ public:
 
     static DataProvider& getInstance();
 
-    void fetchData();
+    void fetchData(int group = -1);
+    bool canFetch(int group);
 
 signals:
-    void dataReady(const QJsonDocument&);
+    void dataChunkReady(const dataChunkList&);
 
 private:
     DataProvider(QObject *parent = nullptr);
@@ -26,9 +34,12 @@ private:
 
 private slots:
     void handleDownloadFinished(const QByteArray&);
+    bool splitJsonToGroups(const QJsonDocument& json);
 private:
     static DataProvider mInstance;
-
+    QMap<int, QVector<QVariant>> mItemsByGroups;
+    QMap<int, QVariant> mGroupsData;
+    QMap<int, int> mSentItemsCountPerGroup;
 };
 
 #endif // DATAPROVIDER_H

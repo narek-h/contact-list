@@ -21,7 +21,9 @@ ItemViewDialog::~ItemViewDialog()
 
 void ItemViewDialog::setData(const QVariantMap& data)
 {
-    QString fullName = data.value("firstName").toString() + " " + data.value("lastName").toString();
+    QString firstName = data.value("firstName").toString();
+    QString lastName = data.value("lastName").toString();
+    QString fullName = firstName + " " + lastName;
     setWindowTitle(fullName);
     ui->username->setText(data.value("username").toString());
     ui->fullName->setText(fullName);
@@ -35,7 +37,12 @@ void ItemViewDialog::setData(const QVariantMap& data)
 
     QPainter paint;
     paint.begin(&image);
-    utils::paintAvatar(paint, size, QPoint(size/2,size/2),"AB", utils::getColorForSex(data.value("sex").toString()), Qt::blue);
+    utils::paintAvatar(paint,
+                       size,
+                       QPoint(size/2,size/2),
+                       utils::makeInitials(firstName,lastName),
+                       utils::getColorForSex(data.value("sex").toString()),
+                       Qt::blue);
     paint.end();
     ui->avatar->setPixmap(QPixmap::fromImage(image));
 

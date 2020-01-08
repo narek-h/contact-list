@@ -4,6 +4,8 @@
 #include <QAbstractItemModel>
 #include <QJsonArray>
 #include "treeitem.h"
+#include <QTreeView>
+#include <dataprovider.h>
 
 class ContactListModel : public QAbstractItemModel
 {
@@ -18,12 +20,20 @@ public:
     QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     QModelIndex	parent(const QModelIndex &index) const;
 
+    bool canFetchMore(const QModelIndex &parent) const;
+    void fetchMore(const QModelIndex &parent);
+
+    QTreeView* mView; //Not good, but using as workaround to check the group for fetching data.
+
 public slots:
-    void handleDataReady(const QJsonDocument&);
+    void handleDataReady(const dataChunkList&);
 
 private:
+    int getGroupToFetch() const;
     //QJsonArray mJsonArray;
     QMap<int, TreeItem*> mGroups;
+
+    static int groupToFetch;
 };
 
 #endif // CONTACTLISTMODEL_H

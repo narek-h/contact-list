@@ -76,7 +76,9 @@ void DataProvider::fetchData(int group)
             }
             bool toAdd = false;
             if (mFilter.size() > 1) {
-                if (item.object()["account"].toObject()["firstName"].toString().contains(mFilter)) {
+                if (item.object()["account"].toObject()["firstName"].toString().contains(mFilter) ||
+                    item.object()["account"].toObject()["lastName"].toString().contains(mFilter) ||
+                    item.object()["account"].toObject()["username"].toString().contains(mFilter)) {
                     toAdd = true;
                 }
             } else {

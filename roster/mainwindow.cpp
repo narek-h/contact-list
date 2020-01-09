@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent):
     ui->setupUi(this);
 
     ContactListModel* model = new ContactListModel();
-    model->mView = ui->treeView;
+    model->setTreeView(ui->treeView);
     ui->treeView->setModel(model);
     ContactItemDelegate* delegate = new ContactItemDelegate(ui->treeView);
     ui->treeView->setItemDelegate(delegate);

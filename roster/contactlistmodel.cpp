@@ -6,7 +6,7 @@
 
 int ContactListModel::groupToFetch = -1;
 
-ContactListModel::ContactListModel(QObject *parent) : QAbstractItemModel(parent), mView(nullptr)
+ContactListModel::ContactListModel(QObject *parent) : QAbstractItemModel(parent), mView(nullptr), mFetchingData(false)
 {
     mDataProvider = new DataProvider();
     //Move slots processing to different thread
@@ -26,6 +26,7 @@ ContactListModel::ContactListModel(QObject *parent) : QAbstractItemModel(parent)
     res = connect(this, SIGNAL(fetchMoreSignal(int)), mDataProvider, SLOT(fetchData(int)));
     Q_ASSERT(res);
 
+    mFetchingData = true;
     emit fetchMoreSignal();
 }
 
@@ -103,6 +104,7 @@ QModelIndex	ContactListModel::parent(const QModelIndex &index) const
 
 void ContactListModel::handleDataReady(const dataChunkList& dataChunkList)
 {
+    qDebug() <<"Received data chunk";
     foreach(DataChunkType pair, dataChunkList) {
         QVariantMap groupData = pair.first.toMap();
         int groupId = groupData.value("groupOrder").toInt();
@@ -118,11 +120,20 @@ void ContactListModel::handleDataReady(const dataChunkList& dataChunkList)
         }
         endInsertRows();
     }
-    emit dataChanged(index(0,0, QModelIndex()), index(2, 0, QModelIndex()));
+
+    emit dataChanged(index(0,0, QModelIndex()), createIndex(mGroups.size() - 1, 0, mGroups.last()));
+    if (mView) { //Need to repaint since on some cases the view is not getting updated properrly.
+        mView->repaint();
+    }
+    mFetchingData = false;
 }
 
 bool ContactListModel::canFetchMore(const QModelIndex &parent) const
 {
+    if (mFetchingData) {
+        return false;
+    }
+
     //Note: Somehow when scrolling at the bottom the passed parent index is
     //invalid and not useful to identify the group, so applying a custom logic.
     Q_UNUSED(parent);
@@ -133,17 +144,25 @@ bool ContactListModel::canFetchMore(const QModelIndex &parent) const
 void ContactListModel::fetchMore(const QModelIndex &parent)
 {
     Q_UNUSED(parent);
+    mFetchingData = true;
     emit fetchMoreSignal(groupToFetch);
 }
 
 int ContactListModel::getGroupToFetch() const
 {
+    if (!mView || mFetchingData) {
+        return -1;
+    }
     //we fetch data for a group which has last item visible and has more data to load.
     //when we get here there will be only one group satisfying the condition, assuming we can't have two big groups visible together
     int group = -1; //invlaid
     for (int i = 0; i < mGroups.size(); ++i) {
-        QModelIndex indexToCheck = index(mGroups[i]->childCount()-1, 0, createIndex(i,0, mGroups[i]));
-        if (mView->visualRect(indexToCheck).isValid() && mDataProvider->canFetch(i)) {
+        QModelIndex parentIndex = createIndex(i, 0, mGroups[i]);
+        QModelIndex indexToCheck = index(mGroups[i]->childCount()-1, 0, parentIndex);
+
+        if (i > 0 && mView->isExpanded(createIndex(i - 1, 0, mGroups[i - 1])) && mView->visualRect(parentIndex).isValid()) {
+            group = i - 1;
+        } else if (mView->visualRect(indexToCheck).isValid() && mDataProvider->canFetch(i)) {
             group = i;
         }
     }
@@ -163,6 +182,6 @@ void ContactListModel::handleFilterTextChanged(const QString& text)
     endRemoveRows();
 
     mDataProvider->setFilter(text); //TODO: Make syncronized?
+    mFetchingData = true;
     emit fetchMoreSignal();
 }
-

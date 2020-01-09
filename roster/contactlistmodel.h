@@ -16,14 +16,14 @@ public:
     int rowCount(const QModelIndex & /*parent*/) const;
     QVariant data(const QModelIndex &index, int role) const;
 
-    int columnCount(const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
-    QModelIndex	parent(const QModelIndex &index) const;
+    int columnCount(const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const override;
+    QModelIndex	parent(const QModelIndex &index) const override;
 
-    bool canFetchMore(const QModelIndex &parent) const;
-    void fetchMore(const QModelIndex &parent);
+    bool canFetchMore(const QModelIndex &parent) const override;
+    void fetchMore(const QModelIndex &parent) override;
 
-    QTreeView* mView; //Not good, but using as workaround to check the group for fetching data.
+    void setTreeView(QTreeView* view) { mView = view; }
 
 public slots:
     void handleDataReady(const dataChunkList&);
@@ -36,7 +36,9 @@ private:
     int getGroupToFetch() const;
     //QJsonArray mJsonArray;
     QMap<int, TreeItem*> mGroups;
+    QTreeView* mView; //Not good, but using as workaround to check the group for fetching data.
     static int groupToFetch;
+    bool mFetchingData;
 };
 
 #endif // CONTACTLISTMODEL_H

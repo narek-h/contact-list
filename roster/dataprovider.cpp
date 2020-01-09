@@ -46,6 +46,7 @@ void DataProvider::fetchData(int group)
         groupsToFetch.append(group);
     }
 
+    bool canAddMore = false;
     dataChunkList listToSend;
     mGrSizes = settings.value(groupsSizesKey).toMap();
     foreach(int gr, groupsToFetch) {
@@ -73,29 +74,47 @@ void DataProvider::fetchData(int group)
 
         //Now populate the chunk
         int chunkEnd = std::min(pos + dataChunkSize, groupTotalSize);
-        for (; i < chunkEnd; ++i) {
+        for (; pos < chunkEnd; ++pos) {
             QByteArray line = dataFile.readLine();
             QJsonDocument item = QJsonDocument::fromJson(line);
             if(item.isEmpty()) {
                 qCritical() <<"Unexpected data from cache " <<line;
                 continue;
             }
-            chunk.push_back(item.toVariant());
-            //Create group
-            if (!mGroupsData.contains(gr)) {
-                QVariantMap groupData;
-                groupData["groupOrder"] = item.object().value("groupOrder").toInt();
-                groupData["group"] = item.object().value("group");
-                groupData["id"] = item.object().value("id");
-                mGroupsData[gr] = groupData;
+            bool toAdd = false;
+            if (mFilter.size() > 1) {
+                if (item.object().toVariantMap()["account"].toMap()["firstName"].toString().contains(mFilter)) {
+                    toAdd = true;
+                }
+            } else {
+                toAdd = true;
+            }
+            if (toAdd) {
+                chunk.push_back(item.toVariant());
+                //Create group
+                if (!mGroupsData.contains(gr)) {
+                    QVariantMap groupData;
+                    groupData["groupOrder"] = item.object().value("groupOrder").toInt();
+                    groupData["group"] = item.object().value("group");
+                    groupData["id"] = item.object().value("id");
+                    mGroupsData[gr] = groupData;
+                }
             }
         }
+
         listToSend.push_back(DataChunkType(mGroupsData[gr], chunk));
-        mSentItemsCountPerGroup[gr] = pos + chunk.size();
+        //TODO: change to pos not sent items
+        mSentItemsCountPerGroup[gr] = pos;// + chunk.size();
         dataFile.close();
+        if ((chunk.size() < dataChunkSize) && (pos < groupTotalSize)) {
+            canAddMore = true;
+        }
     }
 
     emit dataChunkReady(listToSend);
+    if (canAddMore) {
+        fetchData();
+    }
 }
 
 bool DataProvider::canFetch(int group)
@@ -182,4 +201,5 @@ void DataProvider::handleDownloadFinished(const QByteArray& data)
 void DataProvider::setFilter(const QString& text)
 {
     mFilter = text;
+    mSentItemsCountPerGroup.clear();
 }

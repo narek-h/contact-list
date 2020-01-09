@@ -147,5 +147,6 @@ void ContactListModel::handleFilterTextChanged(const QString& text)
     endRemoveRows();
 
     DataProvider::getInstance().setFilter(text);
+    DataProvider::getInstance().fetchData();
 }
 

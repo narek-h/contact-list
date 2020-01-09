@@ -27,6 +27,7 @@ public:
 
 public slots:
     void handleDataReady(const dataChunkList&);
+    void handleFilterTextChanged(const QString&);
 
 private:
     int getGroupToFetch() const;

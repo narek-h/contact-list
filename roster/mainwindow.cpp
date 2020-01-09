@@ -19,6 +19,9 @@ MainWindow::MainWindow(QWidget *parent):
 
     bool success = connect(ui->treeView,SIGNAL(clicked(const QModelIndex)),this,SLOT(itemClicked(QModelIndex)));
     Q_ASSERT(success);
+
+    success = connect(ui->lineEdit, SIGNAL(textChanged(const QString&)), model, SLOT(handleFilterTextChanged(const QString&)));
+    Q_ASSERT(success);
 }
 
 MainWindow::~MainWindow()

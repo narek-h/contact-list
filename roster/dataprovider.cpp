@@ -178,3 +178,8 @@ void DataProvider::handleDownloadFinished(const QByteArray& data)
         fetchData();
     }
 }
+
+void DataProvider::setFilter(const QString& text)
+{
+    mFilter = text;
+}

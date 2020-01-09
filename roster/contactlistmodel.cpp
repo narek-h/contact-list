@@ -120,7 +120,7 @@ void ContactListModel::fetchMore(const QModelIndex &parent)
 }
 
 int ContactListModel::getGroupToFetch() const
-{    
+{
     //we fetch data for a group which has last item visible and has more data to load.
     //when we get here there will be only one group satisfying the condition, assuming we can't have two big groups visible together
     int group = -1; //invlaid
@@ -132,3 +132,20 @@ int ContactListModel::getGroupToFetch() const
     }
     return group;
 }
+
+
+void ContactListModel::handleFilterTextChanged(const QString& text)
+{
+    if (text.size() == 1) {
+        return; //filter should be at least 2 symbols long
+    }
+
+    //Clean current list
+    beginRemoveRows(QModelIndex(), 0, mGroups.size());
+    qDeleteAll(mGroups);
+    mGroups.clear();
+    endRemoveRows();
+
+    DataProvider::getInstance().setFilter(text);
+}
+

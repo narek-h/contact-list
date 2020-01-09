@@ -24,6 +24,8 @@ public:
     void fetchData(int group = -1);
     bool canFetch(int group);
 
+    void setFilter(const QString& text);
+
 signals:
     void dataChunkReady(const dataChunkList&);
 
@@ -41,6 +43,7 @@ private:
     QMap<int, int> mSentItemsCountPerGroup;
 
     QVariantMap mGrSizes;
+    QString mFilter;
 };
 
 #endif // DATAPROVIDER_H

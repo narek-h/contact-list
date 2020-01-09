@@ -2,13 +2,31 @@
 #include <QDebug>
 #include <QJsonObject>
 #include <QJsonDocument>
+#include <QThread>
 
 int ContactListModel::groupToFetch = -1;
 
-ContactListModel::ContactListModel(QObject *parent) : QAbstractItemModel(parent)
+ContactListModel::ContactListModel(QObject *parent) : QAbstractItemModel(parent), mView(nullptr)
 {
-    connect(&DataProvider::getInstance(), SIGNAL(dataChunkReady(const dataChunkList&)), this, SLOT(handleDataReady(const dataChunkList&)));
-    DataProvider::getInstance().fetchData();
+    mDataProvider = new DataProvider();
+    //Move slots processing to different thread
+    QThread* dataProcessingThread = new QThread(this);
+    mDataProvider->moveToThread(dataProcessingThread);
+    dataProcessingThread->start();
+    qRegisterMetaType<dataChunkList>("dataChunkList");
+    bool res = connect(mDataProvider, SIGNAL(dataChunkReady(const dataChunkList&)), this, SLOT(handleDataReady(const dataChunkList&)));
+    Q_ASSERT(res);
+    res = connect(dataProcessingThread, SIGNAL(finished()), mDataProvider, SLOT(deleteLater()));
+    Q_ASSERT(res);
+    res = connect(this, SIGNAL(destroyed()), dataProcessingThread, SLOT(quit()));
+    Q_ASSERT(res);
+    res = connect(dataProcessingThread, SIGNAL(finished()), dataProcessingThread, SLOT(deleteLater()));
+    Q_ASSERT(res);
+
+    res = connect(this, SIGNAL(fetchMoreSignal(int)), mDataProvider, SLOT(fetchData(int)));
+    Q_ASSERT(res);
+
+    emit fetchMoreSignal();
 }
 
 ContactListModel::~ContactListModel()
@@ -85,7 +103,6 @@ QModelIndex	ContactListModel::parent(const QModelIndex &index) const
 
 void ContactListModel::handleDataReady(const dataChunkList& dataChunkList)
 {
-    bool firstRun = mGroups.isEmpty();
     foreach(DataChunkType pair, dataChunkList) {
         QVariantMap groupData = pair.first.toMap();
         int groupId = groupData.value("groupOrder").toInt();
@@ -101,6 +118,7 @@ void ContactListModel::handleDataReady(const dataChunkList& dataChunkList)
         }
         endInsertRows();
     }
+    emit dataChanged(index(0,0, QModelIndex()), index(2, 0, QModelIndex()));
 }
 
 bool ContactListModel::canFetchMore(const QModelIndex &parent) const
@@ -115,8 +133,7 @@ bool ContactListModel::canFetchMore(const QModelIndex &parent) const
 void ContactListModel::fetchMore(const QModelIndex &parent)
 {
     Q_UNUSED(parent);
-    qDebug() <<"Fetching more for group " << groupToFetch;
-    DataProvider::getInstance().fetchData(groupToFetch);
+    emit fetchMoreSignal(groupToFetch);
 }
 
 int ContactListModel::getGroupToFetch() const
@@ -126,7 +143,7 @@ int ContactListModel::getGroupToFetch() const
     int group = -1; //invlaid
     for (int i = 0; i < mGroups.size(); ++i) {
         QModelIndex indexToCheck = index(mGroups[i]->childCount()-1, 0, createIndex(i,0, mGroups[i]));
-        if (mView->visualRect(indexToCheck).isValid() && DataProvider::getInstance().canFetch(i)) {
+        if (mView->visualRect(indexToCheck).isValid() && mDataProvider->canFetch(i)) {
             group = i;
         }
     }
@@ -139,14 +156,13 @@ void ContactListModel::handleFilterTextChanged(const QString& text)
     if (text.size() == 1) {
         return; //filter should be at least 2 symbols long
     }
-
     //Clean current list
     beginRemoveRows(QModelIndex(), 0, mGroups.size());
     qDeleteAll(mGroups);
     mGroups.clear();
     endRemoveRows();
 
-    DataProvider::getInstance().setFilter(text);
-    DataProvider::getInstance().fetchData();
+    mDataProvider->setFilter(text); //TODO: Make syncronized?
+    emit fetchMoreSignal();
 }
 

@@ -8,6 +8,7 @@
 #include <QJsonObject>
 #include <QtAlgorithms>
 #include <QSettings>
+#include <QThread>
 
 const QString filePath = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation)[0] + "/group_";
 const QVector<int> groupOrders = {0, 1, 2}; //Hardcoding the list for simplicity but the code can be adjusted to extract this from the data.
@@ -17,17 +18,11 @@ const QString groupsSizesKey = "groupsSizesKey";
 const int cacheExpirationInSecs = 3600;
 
 DataProvider::DataProvider(QObject *parent) : QObject(parent)
-{
-}
-
-DataProvider& DataProvider::getInstance()
-{
-    static DataProvider mInstance;
-    return mInstance;
+{        
 }
 
 void DataProvider::fetchData(int group)
-{
+{    
     QSettings settings;
     if (!((settings.contains(cacheTimeStamp)) &&
           (QDateTime(settings.value(cacheTimeStamp).toDateTime()).secsTo(QDateTime::currentDateTime()) < cacheExpirationInSecs))) { //No cache or expired
@@ -179,7 +174,6 @@ void DataProvider::handleDownloadFinished(const QByteArray& data)
         QFile dataFile(path);
         if (dataFile.open(QFile::WriteOnly)) {
             foreach(auto& item, itemsByGroups[i]) {
-                //qDebug() <<"writing to file ...string" << QJsonDocument(item);
                 dataFile.write(QJsonDocument(item).toJson(QJsonDocument::Compact));
                 dataFile.write("\n"); //To be able to read by lines
             }

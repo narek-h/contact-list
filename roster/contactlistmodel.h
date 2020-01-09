@@ -28,12 +28,14 @@ public:
 public slots:
     void handleDataReady(const dataChunkList&);
     void handleFilterTextChanged(const QString&);
+signals:
+    void fetchMoreSignal(int a = -1);
 
 private:
+    DataProvider* mDataProvider;
     int getGroupToFetch() const;
     //QJsonArray mJsonArray;
     QMap<int, TreeItem*> mGroups;
-
     static int groupToFetch;
 };
 

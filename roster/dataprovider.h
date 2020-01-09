@@ -1,6 +1,8 @@
 #ifndef DATAPROVIDER_H
 #define DATAPROVIDER_H
 
+#include "downloader.h"
+
 #include <QObject>
 #include <QVector>
 #include <QMap>
@@ -32,8 +34,9 @@ private slots:
     QMap<int, QVector<QJsonObject> > splitJsonToGroups(const QJsonDocument& json);
     void fetchData(int group = -1);
 private:
+    Downloader* mDownloader;
     QMap<int, QVariant> mGroupsData;
-    QMap<int, int> mSentItemsCountPerGroup;
+    QMap<int, int> mCurrentPosPerGroup;
 
     QVariantMap mGrSizes;
     QString mFilter;

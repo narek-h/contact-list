@@ -18,7 +18,8 @@ const QString groupsSizesKey = "groupsSizesKey";
 const int cacheExpirationInSecs = 3600;
 
 DataProvider::DataProvider(QObject *parent) : QObject(parent)
-{        
+{
+    mDownloader = new Downloader(this);
 }
 
 void DataProvider::fetchData(int group)
@@ -26,10 +27,8 @@ void DataProvider::fetchData(int group)
     QSettings settings;
     if (!((settings.contains(cacheTimeStamp)) &&
           (QDateTime(settings.value(cacheTimeStamp).toDateTime()).secsTo(QDateTime::currentDateTime()) < cacheExpirationInSecs))) { //No cache or expired
-        //TODO: make a  member to not recreate?
-        Downloader * down = new Downloader(this);
-        connect(down, SIGNAL(downloadFinished(const QByteArray&)), this, SLOT(handleDownloadFinished(const QByteArray&)));
-        down->downloadDataFile();
+        connect(mDownloader, SIGNAL(downloadFinished(const QByteArray&)), this, SLOT(handleDownloadFinished(const QByteArray&)));
+        mDownloader->downloadDataFile();
         return;
     }
 
@@ -53,7 +52,7 @@ void DataProvider::fetchData(int group)
 
         QVector<QVariant> chunk;
         QString grStr = QString::number(gr);
-        int pos = mSentItemsCountPerGroup.contains(gr) ? mSentItemsCountPerGroup[gr] : 0;
+        int pos = mCurrentPosPerGroup.contains(gr) ? mCurrentPosPerGroup[gr] : 0;
         int groupTotalSize = mGrSizes[grStr].toInt();
 
         if (pos >= groupTotalSize ) {
@@ -99,7 +98,7 @@ void DataProvider::fetchData(int group)
 
         listToSend.push_back(DataChunkType(mGroupsData[gr], chunk));
         //TODO: change to pos not sent items
-        mSentItemsCountPerGroup[gr] = pos;// + chunk.size();
+        mCurrentPosPerGroup[gr] = pos;
         dataFile.close();
         if ((chunk.size() < dataChunkSize) && (pos < groupTotalSize)) {
             canAddMore = true;
@@ -114,7 +113,7 @@ void DataProvider::fetchData(int group)
 
 bool DataProvider::canFetch(int group)
 {
-    return mSentItemsCountPerGroup[group] < mGrSizes[QString::number(group)].toInt();
+    return mCurrentPosPerGroup[group] < mGrSizes[QString::number(group)].toInt();
 }
 
 DataProvider::~DataProvider()
@@ -197,5 +196,5 @@ void DataProvider::handleDownloadFinished(const QByteArray& data)
 void DataProvider::setFilter(const QString& text)
 {
     mFilter = text;
-    mSentItemsCountPerGroup.clear();
+    mCurrentPosPerGroup.clear();
 }

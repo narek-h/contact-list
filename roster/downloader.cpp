@@ -18,6 +18,7 @@ void Downloader::downloadDataFile()
 
 void Downloader::handleRequestFinished(QNetworkReply* reply)
 {
+    qDebug() <<"Download finished";
     if (reply->error() == QNetworkReply::NoError) {
         QByteArray data = reply->readAll();
         emit downloadFinished(data);

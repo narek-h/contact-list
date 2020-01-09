@@ -3,7 +3,6 @@
 #include "contactitemdelegate.h"
 #include "contactlistmodel.h"
 #include "itemviewdialog.h"
-#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):
     QMainWindow(parent),

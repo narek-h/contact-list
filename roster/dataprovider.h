@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QMap>
 #include <QVariant>
+#include <QJsonObject>
 
 
 typedef QPair<QVariant, QVector<QVariant>> DataChunkType;
@@ -35,10 +36,9 @@ private:
 
 private slots:
     void handleDownloadFinished(const QByteArray&);
-    bool splitJsonToGroups(const QJsonDocument& json);
+    QMap<int, QVector<QJsonObject> > splitJsonToGroups(const QJsonDocument& json);
 private:
     static DataProvider mInstance;
-    QMap<int, QVector<QVariant>> mItemsByGroups;
     QMap<int, QVariant> mGroupsData;
     QMap<int, int> mSentItemsCountPerGroup;
 

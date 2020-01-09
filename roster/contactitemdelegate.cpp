@@ -2,7 +2,6 @@
 #include "utils.h"
 
 #include <QPainter>
-#include <QDebug>
 
 const int itemHeight = 60;
 const int textLeftPadding = 60;

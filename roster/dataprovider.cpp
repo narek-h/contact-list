@@ -31,7 +31,6 @@ void DataProvider::fetchData(int group)
     QSettings settings;
     if (!((settings.contains(cacheTimeStamp)) &&
           (QDateTime(settings.value(cacheTimeStamp).toDateTime()).secsTo(QDateTime::currentDateTime()) < cacheExpirationInSecs))) { //No cache or expired
-        qDebug() << "here";
         //TODO: make a  member to not recreate?
         Downloader * down = new Downloader(this);
         connect(down, SIGNAL(downloadFinished(const QByteArray&)), this, SLOT(handleDownloadFinished(const QByteArray&)));
@@ -66,9 +65,8 @@ void DataProvider::fetchData(int group)
             continue;
         }
 
-        int i = 0;
         //Go to pos
-        for(; (i < pos) && (i < groupTotalSize) ; ++i) {
+        for(int i = 0; (i < pos) && (i < groupTotalSize) ; ++i) {
             dataFile.readLine();
         }
 
@@ -83,7 +81,7 @@ void DataProvider::fetchData(int group)
             }
             bool toAdd = false;
             if (mFilter.size() > 1) {
-                if (item.object().toVariantMap()["account"].toMap()["firstName"].toString().contains(mFilter)) {
+                if (item.object()["account"].toObject()["firstName"].toString().contains(mFilter)) {
                     toAdd = true;
                 }
             } else {
@@ -126,18 +124,11 @@ DataProvider::~DataProvider()
 {
 }
 
-bool DataProvider::splitJsonToGroups(const QJsonDocument& json)
+QMap<int, QVector<QJsonObject>> DataProvider::splitJsonToGroups(const QJsonDocument& json)
 {
-    if (mItemsByGroups.size() > 0) //done
-        return true;
-
+    QMap<int, QVector<QJsonObject>> itemsByGroups;
     QJsonArray jsonArray = json.object()["roster"].toArray();
-    if (jsonArray.size() == 0 ) {
-        qCritical() <<"No elements in roster array";
-        return false;
-    }
-
-    foreach(QJsonValue item, jsonArray) {
+    for (auto item : jsonArray) {
         int groupId = item.toObject().value("groupOrder").toInt();
         if (!mGroupsData.contains(groupId)) {
             QVariantMap groupData;
@@ -146,50 +137,59 @@ bool DataProvider::splitJsonToGroups(const QJsonDocument& json)
             groupData["id"] = item.toObject().value("id");
             mGroupsData[groupId] = groupData;
         }
-        mItemsByGroups[groupId].push_back(item.toVariant());
-        //Need to sort all the items here. Since we put only some portion in the View we need to sort the entire data
-        foreach(int i , mItemsByGroups.keys()) {
-            //To heavy. Try to optimize sorting.
-            //            std::sort(mItemsByGroups[i].begin(), mItemsByGroups[i].end(), [](const QVariant& item1, const QVariant& item2)
-            //            {
-            //                return  true;//for now disabling
-            //                if(item1.toMap()["account"].toMap()["firstName"].toString() >
-            //                   item2.toMap()["account"].toMap()["firstName"].toString())
-            //                    return false;
-            //                return true;
-            //            });
-        }
+        itemsByGroups[groupId].push_back(item.toObject());
     }
-    return true;
+
+    foreach(int i , itemsByGroups.keys()) {
+        auto& groupItems = itemsByGroups[i];
+
+        //Need to sort all the items here. Since we put only some portion in the View we need to sort the entire data
+        std::sort(groupItems.begin(), groupItems.end(), [](const QJsonObject& item1, const QJsonObject& item2)
+        {
+            QString firstName1 = item1["account"].toObject()["firstName"].toString();
+            QString firstName2 = item2["account"].toObject()["firstName"].toString();
+            if( firstName1 < firstName2) {
+                return true;
+            } else if (firstName1 == firstName2) { //Checking separately is more optimal, not always extracting lastName
+                return item1["account"].toObject()["lastName"].toString() < item2["account"].toObject()["lastName"].toString();
+            }
+            return false;
+        });
+    }
+
+    if (itemsByGroups.empty()) {
+        qCritical() << "No elements in roster array";
+    }
+
+    return itemsByGroups;
 }
 
 void DataProvider::handleDownloadFinished(const QByteArray& data)
 {
-    qDebug() << "Download finished";
     QJsonDocument json = QJsonDocument::fromJson(data);
-    bool done = splitJsonToGroups(json);
-
+    auto itemsByGroups = splitJsonToGroups(json);
 
     QVariantMap grSizes;
-    foreach(int i, mItemsByGroups.keys()) {
-        grSizes[QString::number(i)] = mItemsByGroups[i].size();
+
+    bool success = true;
+    foreach(int i, itemsByGroups.keys()) {
+        grSizes[QString::number(i)] = itemsByGroups[i].size();
         //Save items to files
-        QString path = filePath + QString::number(i) + ".json";
-        qDebug() << "writing to the fie " << path;
+        QString path = filePath + QString::number(i) + ".json";        
         QFile dataFile(path);
         if (dataFile.open(QFile::WriteOnly)) {
-            foreach(QVariant item, mItemsByGroups[i]) {
-                qDebug() <<"writing to file ...string" << QJsonDocument::fromVariant(item);
-                dataFile.write(QJsonDocument::fromVariant(item).toJson(QJsonDocument::Compact));
+            foreach(auto& item, itemsByGroups[i]) {
+                //qDebug() <<"writing to file ...string" << QJsonDocument(item);
+                dataFile.write(QJsonDocument(item).toJson(QJsonDocument::Compact));
                 dataFile.write("\n"); //To be able to read by lines
             }
             dataFile.close();
         } else {
             qCritical() << "Can not open file for writing: " << path;
-            done = false;
+            success = false;
         }
     }
-    if (done) {
+    if (success) {
         QSettings settings;
         settings.setValue("cacheTimeStamp", QDateTime::currentDateTime());
         settings.setValue("groupsSizesKey", grSizes);

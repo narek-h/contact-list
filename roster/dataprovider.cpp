@@ -39,7 +39,7 @@ void DataProvider::fetchData(int group)
     }
 
     QVector<int> groupsToFetch;
-    if (group = -1) {//fetch all
+    if (group == -1) {//fetch all
         groupsToFetch.append(groupOrders);
     } else {
         groupsToFetch.append(group);
